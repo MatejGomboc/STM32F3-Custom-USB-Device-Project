@@ -179,6 +179,7 @@ void HAL_PCD_ResetCallback(PCD_HandleTypeDef *hpcd)
  */
 void HAL_PCD_SuspendCallback(PCD_HandleTypeDef *hpcd)
 {
+	/* Turn off blue LED (LD4), indicating USB device suspended. */
 	MX_GPIO_Set_LD4(false);
 
 	/* Inform USB library that core enters in suspend Mode */
@@ -212,6 +213,8 @@ void HAL_PCD_ResumeCallback(PCD_HandleTypeDef *hpcd)
 	USBD_LL_Resume(hpcd->pData);
 
 	MX_GPIO_Init();
+
+	/* Turn on blue LED (LD4), indicating USB device connected. */
 	MX_GPIO_Set_LD4(true);
 }
 
