@@ -1,7 +1,7 @@
 #include "usbd_custom.h"
 #include "usbd_desc.h"
 #include "usbd_ctlreq.h"
-#include "gpio.h"
+#include "main.h"
 #include <stdint.h>
 
 
@@ -44,9 +44,13 @@ USBD_ClassTypeDef USBD_CUSTOM_ClassDriver =
 	USBD_CUSTOM_GetCfgDesc,
 	NULL,
 	NULL
+
 #ifdef USBD_SUPPORT_USER_STRING
+
 	, USBD_CUSTOM_USRStringDesc
+
 #endif /* USBD_SUPPORT_USER_STRING */
+
 };
 
 
@@ -115,27 +119,28 @@ static uint8_t USBD_CUSTOM_Setup (USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef
 {
 	switch (req->bmRequest & USB_REQ_TYPE_MASK)
 	{
-		//case USB_REQ_TYPE_CLASS:
-		//{
-			//USBD_CtlError(pdev, req);
-			//return USBD_FAIL;
-		//}
-		//case USB_REQ_TYPE_STANDARD:
-		//{
-			//USBD_CtlError(pdev, req);
-			//return USBD_FAIL;
-		//}
+		case USB_REQ_TYPE_CLASS:
+		{
+			USBD_CtlError(pdev, req);
+			return USBD_FAIL;
+		}
+		case USB_REQ_TYPE_STANDARD:
+		{
+			USBD_CtlError(pdev, req);
+			return USBD_FAIL;
+		}
 		case USB_REQ_TYPE_VENDOR:
 		{
-			//if (req->bRequest == 0xAA)
-				//MX_GPIO_Set_LD3(false);
-			//else if (req->bRequest == 0xBB)
-				MX_GPIO_Set_LD3(true);
+			/* Toggling LED10 via control endpoint */
+			if (req->bRequest == 0xAA)
+				BSP_LED_Toggle(LED10);
 
 			return USBD_OK;
 		}
 	}
-	return USBD_OK;
+
+	USBD_CtlError(pdev, req);
+	return USBD_FAIL;
 }
 
 

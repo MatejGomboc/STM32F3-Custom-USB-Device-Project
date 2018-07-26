@@ -1,5 +1,4 @@
 #include "main.h"
-#include "gpio.h"
 #include "usbd_custom.h"
 #include "usbd_conf.h"
 #include "stm32f3xx_hal.h"
@@ -10,9 +9,9 @@ PCD_HandleTypeDef hpcd;
 
 #if (USBD_DEBUG_LEVEL > 1)
 
-void USBD_ErrLog(const char *fmt, ...)
-{
-}
+	void USBD_ErrLog(const char *fmt, ...)
+	{
+	}
 
 #endif /* USBD_DEBUG_LEVEL */
 
@@ -48,9 +47,11 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef *hpcd)
 	__HAL_RCC_SYSCFG_CLK_ENABLE();
 
 #if defined (USE_USB_INTERRUPT_REMAPPED)
+
 	/*USB interrupt remapping enable */
 	__HAL_REMAPINTERRUPT_USB_ENABLE();
-#endif
+
+#endif /* USE_USB_INTERRUPT_REMAPPED */
 
 	if(hpcd->Init.low_power_enable == 1)
 	{
@@ -60,6 +61,7 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef *hpcd)
 		__HAL_USB_WAKEUP_EXTI_ENABLE_IT();
 
 #if defined (USE_USB_INTERRUPT_DEFAULT)
+
 		/* USB Default Wakeup Interrupt */
 		HAL_NVIC_EnableIRQ(USBWakeUp_IRQn);
 
@@ -73,7 +75,8 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef *hpcd)
 
 		/* Enable USB Wake-up interrupt */
 		HAL_NVIC_SetPriority(USBWakeUp_RMP_IRQn, 0, 0);
-#endif
+
+#endif /* USE_USB_INTERRUPT_REMAPPED */
 
 	}
 #if defined (USE_USB_INTERRUPT_DEFAULT)
@@ -85,12 +88,15 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef *hpcd)
 	HAL_NVIC_EnableIRQ(USB_LP_CAN_RX0_IRQn);
 
 #elif defined (USE_USB_INTERRUPT_REMAPPED)
+
 	/* Set USB Remapped FS Interrupt priority */
 	HAL_NVIC_SetPriority(USB_LP_IRQn, 0x0F, 0);
 
 	/* Enable USB FS Interrupt */
 	HAL_NVIC_EnableIRQ(USB_LP_IRQn);
-#endif
+
+#endif /* USE_USB_INTERRUPT_REMAPPED */
+
 }
 
 
@@ -179,17 +185,15 @@ void HAL_PCD_ResetCallback(PCD_HandleTypeDef *hpcd)
  */
 void HAL_PCD_SuspendCallback(PCD_HandleTypeDef *hpcd)
 {
-	/* Turn off blue LED (LD4), indicating USB device suspended. */
-	MX_GPIO_Set_LD4(false);
+	/* Turn off blue LED4, indicating USB device suspended */
+	BSP_LED_Off(LED4);
 
-	/* Inform USB library that core enters in suspend Mode */
+	/* Inform USB library that core enters in suspend mode */
 	USBD_LL_Suspend(hpcd->pData);
 
 	/* Enter in STOP mode */
 	if (hpcd->Init.low_power_enable)
 	{
-		MX_GPIO_DeInit();
-
 		/* Set SLEEPDEEP bit and SleepOnExit of Cortex System Control Register */
 		SCB->SCR |= (uint32_t)((uint32_t)(SCB_SCR_SLEEPDEEP_Msk | SCB_SCR_SLEEPONEXIT_Msk));
 	}
@@ -212,10 +216,10 @@ void HAL_PCD_ResumeCallback(PCD_HandleTypeDef *hpcd)
 	}
 	USBD_LL_Resume(hpcd->pData);
 
-	MX_GPIO_Init();
+	//MX_GPIO_Init();
 
-	/* Turn on blue LED (LD4), indicating USB device connected. */
-	MX_GPIO_Set_LD4(true);
+	/* Turn on blue LED4, indicating USB device connected. */
+	BSP_LED_On(LED4);
 }
 
 
@@ -347,11 +351,7 @@ USBD_StatusTypeDef USBD_LL_OpenEP(USBD_HandleTypeDef *pdev,
 		uint8_t ep_type,
 		uint16_t ep_mps)
 {
-	HAL_PCD_EP_Open(pdev->pData,
-			ep_addr,
-			ep_mps,
-			ep_type);
-
+	HAL_PCD_EP_Open(pdev->pData, ep_addr, ep_mps, ep_type);
 	return USBD_OK;
 }
 

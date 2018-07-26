@@ -201,6 +201,7 @@ static void IntToUnicode(uint32_t value, uint8_t *pbuf, uint8_t len)
 
 
 #ifdef USBD_SUPPORT_USER_STRING
+
 	uint8_t *USBD_CUSTOM_USRStringDesc(struct _USBD_HandleTypeDef *pdev, uint8_t index, uint16_t *length)
 	{
 		switch (index)
@@ -213,4 +214,5 @@ static void IntToUnicode(uint32_t value, uint8_t *pbuf, uint8_t len)
 			return NULL;
 		}
 	}
+
 #endif /* USBD_SUPPORT_USER_STRING */

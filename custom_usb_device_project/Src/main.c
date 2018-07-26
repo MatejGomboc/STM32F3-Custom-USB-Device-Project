@@ -1,6 +1,5 @@
 #include "main.h"
 #include "stm32f3xx_hal.h"
-#include "gpio.h"
 #include "usbd_custom.h"
 #include "usbd_desc.h"
 
@@ -8,16 +7,28 @@
 USBD_HandleTypeDef USBD_Device;
 
 
+/**
+ * @brief Application entry point
+ * @retval None
+ */
 int main(void)
 {
-	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+	/* Reset of all peripherals, Initializes the Flash interface and the Systick */
 	HAL_Init();
 
 	/* Configure the system clock */
 	SystemClock_Config();
 
-	/* Initialize GPIOs */
-	MX_GPIO_Init();
+	/* Initialize LEDs and User_Button on STM32F3-Discovery */
+	BSP_PB_Init(BUTTON_USER, BUTTON_MODE_EXTI);
+	BSP_LED_Init(LED4);
+	BSP_LED_Init(LED3);
+	BSP_LED_Init(LED5);
+	BSP_LED_Init(LED7);
+	BSP_LED_Init(LED9);
+	BSP_LED_Init(LED10);
+	BSP_LED_Init(LED8);
+	BSP_LED_Init(LED6);
 
 	/* Init Device Library */
 	USBD_Init(&USBD_Device, &CUSTOM_Desc, 0);
@@ -31,6 +42,7 @@ int main(void)
 	/* Infinite loop */
 	while (1)
 	{
+		/* Sleep while idle to reduce power consumption */
 		__WFI();
 	}
 }
@@ -98,12 +110,12 @@ void SystemClock_Config(void)
  */
 void _Error_Handler(char *file, int line)
 {
-	/* User can add his own implementation to report the HAL error return state */
 	while (1);
 }
 
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
+
 /**
  * @brief  Reports the name of the source file and the source line number
  *         where the assert_param error has occurred.
@@ -112,9 +124,8 @@ void _Error_Handler(char *file, int line)
  * @retval None
  */
 void assert_failed(uint8_t* file, uint32_t line)
-{ 
-	/* User can add his own implementation to report the file name and line number,
-     tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+{
 	while (1);
 }
-#endif
+
+#endif /* USE_FULL_ASSERT */

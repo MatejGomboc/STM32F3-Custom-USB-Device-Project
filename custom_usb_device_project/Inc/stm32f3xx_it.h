@@ -14,9 +14,13 @@ void SysTick_Handler(void);
 void RCC_IRQHandler(void);
 
 #if defined (USE_USB_INTERRUPT_DEFAULT)
+
 	void USB_LP_CAN_RX0_IRQHandler(void);
+
 #elif defined (USE_USB_INTERRUPT_REMAPPED)
+
 	void USB_LP_IRQHandler(void);
-#endif
+
+#endif /* USE_USB_INTERRUPT_REMAPPED */
 
 #endif /* __STM32F3xx_IT_H */

@@ -19,7 +19,9 @@
 extern USBD_DescriptorsTypeDef CUSTOM_Desc;
 
 #ifdef USBD_SUPPORT_USER_STRING
+
 	extern uint8_t *USBD_CUSTOM_USRStringDesc(struct _USBD_HandleTypeDef *pdev, uint8_t index, uint16_t *length);
+
 #endif /* USBD_SUPPORT_USER_STRING */
 
 #endif /* __USBD_DESC_H */
